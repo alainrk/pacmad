@@ -26,3 +26,6 @@ go build ./...
 chmod +x crosscompile.sh
 ./crosscompile.sh
 ```
+
+### Development
+Branch *main* is protected and requires PR.
