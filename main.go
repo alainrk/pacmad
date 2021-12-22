@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"os"
 	"time"
@@ -17,6 +18,23 @@ type Pac struct {
 	y      float64
 	angle  float64
 	sprite *pixel.Sprite
+}
+
+func (p *Pac) move(dx, dy, maxx, maxy float64) {
+	p.x += dx
+	p.y += dy
+	// if p.x < 0 {
+	// 	p.x = maxx
+	// }
+	// if p.y < 0 {
+	// 	p.y = maxy
+	// }
+	// if p.x > maxx {
+	// 	p.x = 0
+	// }
+	// if p.y > maxy {
+	// 	p.y = 0
+	// }
 }
 
 func NewPac() *Pac {
@@ -63,13 +81,19 @@ func run() {
 		lastTime = time.Now()
 
 		pac.angle += 5 * dt
+		movement := 1000 * dt
+		pac.move(movement, movement, win.Bounds().W(), win.Bounds().H())
+
+		// fmt.Println(pac, win.Bounds().W(), win.Bounds().H(), movement)
+		fmt.Println(dt, pac)
 
 		win.Clear(colornames.Black)
 
 		mat := pixel.IM
-		mat = mat.Moved(win.Bounds().Center())
-		mat = mat.Rotated(win.Bounds().Center(), pac.angle)
+		// mat = mat.Moved(win.Bounds().Center())
+		mat = mat.Moved(pixel.V(pac.x, pac.y))
 		mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
+		// mat = mat.Rotated(win.Bounds().Center(), pac.angle)
 
 		pac.sprite.Draw(win, mat)
 
