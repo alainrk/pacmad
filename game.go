@@ -40,9 +40,9 @@ func NewGame() *Game {
 }
 
 func (f *Game) Update() {
-	now := time.Now()
 	for i, shot := range f.shots {
-		if now.Sub(shot.createdAt) > shotDuration {
+		shot.Update()
+		if shot.dead {
 			f.shots = append(f.shots[:i], f.shots[i+1:]...)
 		}
 	}
