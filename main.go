@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math"
 	"os"
 	"time"
 
@@ -10,6 +11,13 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
+)
+
+var (
+	camPos       = pixel.ZV
+	camSpeed     = 500.0
+	camZoom      = 1.0
+	camZoomSpeed = 1.01
 )
 
 func CreateWindow() *pixelgl.Window {
@@ -40,11 +48,30 @@ func run() {
 		dt := time.Since(lastTime).Seconds()
 		lastTime = time.Now()
 
+		// -- Cam
+		cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
+		win.SetMatrix(cam)
+
+		if win.Pressed(pixelgl.KeyLeft) {
+			camPos.X -= camSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyRight) {
+			camPos.X += camSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyDown) {
+			camPos.Y -= camSpeed * dt
+		}
+		if win.Pressed(pixelgl.KeyUp) {
+			camPos.Y += camSpeed * dt
+		}
+		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
+
 		// --- Actions
-		pac.Move(dt)
+		pac.Move(-dt)
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			forest.AddTree(win.MousePosition())
+			mouse := cam.Unproject(win.MousePosition())
+			forest.AddTree(mouse)
 		}
 
 		// --- Draw
