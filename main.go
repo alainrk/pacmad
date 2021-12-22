@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"os"
+	"time"
 
 	_ "image/png"
 
@@ -11,9 +12,30 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-var i float64 = 0
+type Pac struct {
+	x      float64
+	y      float64
+	angle  float64
+	sprite *pixel.Sprite
+}
 
-func run() {
+func NewPac() *Pac {
+	pic, err := loadPicture("pac.png")
+	if err != nil {
+		panic(err)
+	}
+
+	sprite := pixel.NewSprite(pic, pic.Bounds())
+
+	return &Pac{
+		x:      0,
+		y:      0,
+		angle:  0,
+		sprite: sprite,
+	}
+}
+
+func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pacmad",
 		Bounds: pixel.R(0, 0, 1024, 768),
@@ -26,26 +48,30 @@ func run() {
 	}
 
 	win.SetSmooth(true)
+	return win
+}
 
-	pic, err := loadPicture("pacmad.png")
-	if err != nil {
-		panic(err)
-	}
-
-	sprite := pixel.NewSprite(pic, pic.Bounds())
+func run() {
+	win := CreateWindow()
+	pac := NewPac()
+	lastTime := time.Now()
 
 	// Main Loop
 	for !win.Closed() {
-		i += 0.1
+		// Keep consistent FPS rate, adjusting the rotation (in this case) according to the time elapsed since the last frame.
+		dt := time.Since(lastTime).Seconds()
+		lastTime = time.Now()
+
+		pac.angle += 5 * dt
 
 		win.Clear(colornames.Black)
 
 		mat := pixel.IM
 		mat = mat.Moved(win.Bounds().Center())
-		mat = mat.Rotated(win.Bounds().Center(), i)
+		mat = mat.Rotated(win.Bounds().Center(), pac.angle)
 		mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
 
-		sprite.Draw(win, mat)
+		pac.sprite.Draw(win, mat)
 
 		win.Update()
 	}
