@@ -11,6 +11,8 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+var i float64 = 0
+
 func run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pacmad",
@@ -23,6 +25,8 @@ func run() {
 		panic(err)
 	}
 
+	win.SetSmooth(true)
+
 	pic, err := loadPicture("pacmad.png")
 	if err != nil {
 		panic(err)
@@ -30,11 +34,19 @@ func run() {
 
 	sprite := pixel.NewSprite(pic, pic.Bounds())
 
-	win.Clear(colornames.Darkgreen)
-	sprite.Draw(win, pixel.IM.Moved(win.Bounds().Center()))
-
 	// Main Loop
 	for !win.Closed() {
+		i += 0.1
+
+		win.Clear(colornames.Black)
+
+		mat := pixel.IM
+		mat = mat.Moved(win.Bounds().Center())
+		mat = mat.Rotated(win.Bounds().Center(), i)
+		mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
+
+		sprite.Draw(win, mat)
+
 		win.Update()
 	}
 }
