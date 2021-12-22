@@ -76,7 +76,7 @@ func run() {
 		}
 
 		// --- Draw
-		win.Clear(colornames.Black)
+		win.Clear(colornames.White)
 
 		// Pac
 		pac.Draw(win)
