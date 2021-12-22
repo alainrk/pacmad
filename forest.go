@@ -41,14 +41,14 @@ func NewForest() *Forest {
 }
 
 func (f *Forest) AddTree(pos pixel.Vec) {
-	tree := pixel.NewSprite(f.spritesheet, f.availableFrames[rand.Intn(len(f.availableFrames))])
-	trees = append(trees, tree)
-	treeMatrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pos)
-	treeMatrices = append(treeMatrices, treeMatrix)
+	sprite := pixel.NewSprite(f.spritesheet, f.availableFrames[rand.Intn(len(f.availableFrames))])
+	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pos)
+	tree := &Tree{pos.X, pos.Y, sprite, matrix}
+	f.trees = append(f.trees, tree)
 }
 
 func (f *Forest) Draw(win *pixelgl.Window) {
-	for i, tree := range trees {
-		tree.Draw(win, treeMatrices[i])
+	for _, tree := range f.trees {
+		tree.sprite.Draw(win, tree.matrix)
 	}
 }

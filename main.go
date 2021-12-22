@@ -2,7 +2,6 @@ package main
 
 import (
 	"image"
-	"math/rand"
 	"os"
 	"time"
 
@@ -11,15 +10,6 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-)
-
-func RandIntInRange(min, max int) int {
-	return min + rand.Intn(max-min)
-}
-
-var (
-	trees        []*pixel.Sprite
-	treeMatrices []pixel.Matrix
 )
 
 func CreateWindow() *pixelgl.Window {
