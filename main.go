@@ -39,7 +39,7 @@ func CreateWindow() *pixelgl.Window {
 func run() {
 	win := CreateWindow()
 	pac := NewPac()
-	forest := NewForest()
+	game := NewGame()
 	lastTime := time.Now()
 
 	// Main Loop
@@ -68,10 +68,11 @@ func run() {
 
 		// --- Actions
 		pac.Move(-dt)
+		game.Update()
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
 			mouse := cam.Unproject(win.MousePosition())
-			forest.AddTree(mouse)
+			game.AddShot(mouse)
 		}
 
 		// --- Draw
@@ -81,7 +82,7 @@ func run() {
 		pac.Draw(win)
 
 		// Trees
-		forest.Draw(win)
+		game.Draw(win)
 
 		win.Update()
 	}
