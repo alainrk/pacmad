@@ -1,13 +1,9 @@
 package main
 
 import (
-	"time"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
-
-const shotDuration = 100 * time.Millisecond
 
 type Game struct {
 	spritesheet     pixel.Picture
