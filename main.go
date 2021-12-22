@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"image"
+	"math/rand"
 	"os"
 	"time"
 
@@ -13,6 +13,15 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+func RandIntInRange(min, max int) int {
+	return min + rand.Intn(max-min)
+}
+
+var (
+	trees        []*pixel.Sprite
+	treeMatrices []pixel.Matrix
+)
+
 type Pac struct {
 	x      float64
 	y      float64
@@ -20,21 +29,49 @@ type Pac struct {
 	sprite *pixel.Sprite
 }
 
+type Tree struct {
+	x      float64
+	y      float64
+	sprite *pixel.Sprite
+	matrix pixel.Matrix
+}
+
+type Forest struct {
+	spritesheet     pixel.Picture
+	availableFrames []pixel.Rect
+	trees           []*Tree
+}
+
+func NewForest() *Forest {
+	spritesheet, err := loadPicture("trees.png")
+	if err != nil {
+		panic(err)
+	}
+
+	frames := []pixel.Rect{}
+	for x := spritesheet.Bounds().Min.X; x < spritesheet.Bounds().Max.X; x += 32 {
+		for y := spritesheet.Bounds().Min.Y; y < spritesheet.Bounds().Max.Y; y += 32 {
+			frames = append(frames, pixel.R(x, y, x+32, y+32))
+		}
+	}
+
+	return &Forest{
+		spritesheet:     spritesheet,
+		availableFrames: frames,
+		trees:           []*Tree{},
+	}
+}
+
+func (f *Forest) AddTree(pos pixel.Vec) {
+	tree := pixel.NewSprite(f.spritesheet, f.availableFrames[rand.Intn(len(f.availableFrames))])
+	trees = append(trees, tree)
+	treeMatrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pos)
+	treeMatrices = append(treeMatrices, treeMatrix)
+}
+
 func (p *Pac) move(dx, dy, maxx, maxy float64) {
 	p.x += dx
 	p.y += dy
-	// if p.x < 0 {
-	// 	p.x = maxx
-	// }
-	// if p.y < 0 {
-	// 	p.y = maxy
-	// }
-	// if p.x > maxx {
-	// 	p.x = 0
-	// }
-	// if p.y > maxy {
-	// 	p.y = 0
-	// }
 }
 
 func NewPac() *Pac {
@@ -65,13 +102,14 @@ func CreateWindow() *pixelgl.Window {
 		panic(err)
 	}
 
-	win.SetSmooth(true)
+	// win.SetSmooth(true)
 	return win
 }
 
 func run() {
 	win := CreateWindow()
 	pac := NewPac()
+	forest := NewForest()
 	lastTime := time.Now()
 
 	// Main Loop
@@ -80,22 +118,29 @@ func run() {
 		dt := time.Since(lastTime).Seconds()
 		lastTime = time.Now()
 
+		// --- Actions
 		pac.angle += 5 * dt
-		movement := 1000 * dt
-		pac.move(movement, movement, win.Bounds().W(), win.Bounds().H())
+		pacmove := 1000 * dt
+		pac.move(pacmove, pacmove, win.Bounds().W(), win.Bounds().H())
 
-		// fmt.Println(pac, win.Bounds().W(), win.Bounds().H(), movement)
-		fmt.Println(dt, pac)
+		if win.JustPressed(pixelgl.MouseButtonLeft) {
+			forest.AddTree(win.MousePosition())
+		}
 
+		// --- Draw
 		win.Clear(colornames.Black)
 
+		// Pac
 		mat := pixel.IM
-		// mat = mat.Moved(win.Bounds().Center())
 		mat = mat.Moved(pixel.V(pac.x, pac.y))
 		mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
 		// mat = mat.Rotated(win.Bounds().Center(), pac.angle)
-
 		pac.sprite.Draw(win, mat)
+
+		// Trees
+		for i, tree := range trees {
+			tree.Draw(win, treeMatrices[i])
+		}
 
 		win.Update()
 	}
