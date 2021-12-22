@@ -12,29 +12,6 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-type Pac struct {
-	x      float64
-	y      float64
-	angle  float64
-	sprite *pixel.Sprite
-}
-
-func NewPac() *Pac {
-	pic, err := loadPicture("pac.png")
-	if err != nil {
-		panic(err)
-	}
-
-	sprite := pixel.NewSprite(pic, pic.Bounds())
-
-	return &Pac{
-		x:      0,
-		y:      0,
-		angle:  0,
-		sprite: sprite,
-	}
-}
-
 func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pacmad",
@@ -47,13 +24,14 @@ func CreateWindow() *pixelgl.Window {
 		panic(err)
 	}
 
-	win.SetSmooth(true)
+	// win.SetSmooth(true)
 	return win
 }
 
 func run() {
 	win := CreateWindow()
 	pac := NewPac()
+	forest := NewForest()
 	lastTime := time.Now()
 
 	// Main Loop
@@ -62,16 +40,21 @@ func run() {
 		dt := time.Since(lastTime).Seconds()
 		lastTime = time.Now()
 
-		pac.angle += 5 * dt
+		// --- Actions
+		pac.Move(dt)
 
+		if win.JustPressed(pixelgl.MouseButtonLeft) {
+			forest.AddTree(win.MousePosition())
+		}
+
+		// --- Draw
 		win.Clear(colornames.Black)
 
-		mat := pixel.IM
-		mat = mat.Moved(win.Bounds().Center())
-		mat = mat.Rotated(win.Bounds().Center(), pac.angle)
-		mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
+		// Pac
+		pac.Draw(win)
 
-		pac.sprite.Draw(win, mat)
+		// Trees
+		forest.Draw(win)
 
 		win.Update()
 	}
