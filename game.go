@@ -6,10 +6,9 @@ import (
 )
 
 type Game struct {
-	spritesheet     pixel.Picture
-	availableFrames []pixel.Rect
-	sprites         []*pixel.Sprite
-	shots           []*Shot
+	shotSprites []*pixel.Sprite
+	// ghostSprites []*pixel.Sprite
+	shots []*Shot
 }
 
 func NewGame() *Game {
@@ -19,19 +18,17 @@ func NewGame() *Game {
 	}
 
 	frames := []pixel.Rect{}
-	sprites := []*pixel.Sprite{}
+	shotSprites := []*pixel.Sprite{}
 	for x := spritesheet.Bounds().Min.X; x < spritesheet.Bounds().Max.X; x += 32 {
 		for y := spritesheet.Bounds().Min.Y; y < spritesheet.Bounds().Max.Y; y += 32 {
 			frames = append(frames, pixel.R(x, y, x+32, y+32))
-			sprites = append(sprites, pixel.NewSprite(spritesheet, frames[len(frames)-1]))
+			shotSprites = append(shotSprites, pixel.NewSprite(spritesheet, frames[len(frames)-1]))
 		}
 	}
 
 	return &Game{
-		spritesheet:     spritesheet,
-		availableFrames: frames,
-		sprites:         sprites,
-		shots:           []*Shot{},
+		shotSprites: shotSprites,
+		shots:       []*Shot{},
 	}
 }
 
@@ -45,7 +42,7 @@ func (f *Game) Update() {
 }
 
 func (f *Game) AddShot(pos pixel.Vec) {
-	shot := NewShot(pos.X, pos.Y, f.sprites)
+	shot := NewShot(pos.X, pos.Y, f.shotSprites)
 
 	f.shots = append(f.shots, shot)
 }
