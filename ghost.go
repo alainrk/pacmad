@@ -8,18 +8,24 @@ import (
 )
 
 type Ghost struct {
-	_dead     bool
-	x         float64
-	y         float64
-	sprites   []*pixel.Sprite
-	matrix    pixel.Matrix
-	animation *Animation
+	_createdAt time.Time
+	_dead      bool
+	x          float64
+	y          float64
+	direction  pixel.Vec
+	sprites    []*pixel.Sprite
+	matrix     pixel.Matrix
+	animation  *Animation
+	ttlSec     int
 }
 
-func NewGhost(x, y float64, sprites []*pixel.Sprite) *Ghost {
+func NewGhost(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Ghost {
 	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.V(x, y))
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
-	return &Ghost{false, x, y, sprites, matrix, animation}
+	now := time.Now()
+	dx, dy := RandFloatInRange(-1, 1), RandFloatInRange(-1, 1)
+	direction := pixel.V(dx, dy)
+	return &Ghost{now, false, x, y, direction, sprites, matrix, animation, ttlSec}
 }
 
 func (g *Ghost) Draw(win *pixelgl.Window) {
@@ -29,6 +35,15 @@ func (g *Ghost) Draw(win *pixelgl.Window) {
 
 func (g *Ghost) Update() {
 	g.animation.Update()
+
+	newVec := pixel.V(g.x, g.y).Add(g.direction)
+	g.x = newVec.X
+	g.y = newVec.Y
+	g.matrix = g.matrix.Moved(pixel.V(g.direction.X, g.direction.Y))
+
+	if g._createdAt.Add(time.Duration(g.ttlSec) * time.Second).Before(time.Now()) {
+		g._dead = true
+	}
 }
 
 func (g *Ghost) Kill() {
@@ -36,5 +51,5 @@ func (g *Ghost) Kill() {
 }
 
 func (g *Ghost) IsDead() bool {
-	return false
+	return g._dead
 }

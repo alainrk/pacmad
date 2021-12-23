@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/font/basicfont"
 )
 
 func createSprites(spritesheet *pixel.Picture, minX, minY, maxX, maxY, step float64) []*pixel.Sprite {
@@ -20,6 +23,79 @@ func createSprites(spritesheet *pixel.Picture, minX, minY, maxX, maxY, step floa
 	return sprites
 }
 
+func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
+	ghosts := make([]*Ghost, amount)
+	for i := 0; i < amount; i++ {
+		x := float64(RandIntInRange(int(win.Bounds().Min.X+16), int(win.Bounds().Max.X-16)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+60), int(win.Bounds().Max.Y-16)))
+		ttlSec := 5
+		ghosts[i] = NewGhost(x, y, sprites, ttlSec)
+	}
+	return ghosts
+}
+
+func spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac {
+	pacs := make([]*Pac, amount)
+	for i := 0; i < amount; i++ {
+		x := float64(RandIntInRange(int(win.Bounds().Min.X+WindowBoundaryDelta), int(win.Bounds().Max.X-WindowBoundaryDelta)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+WindowBoundaryDeltaY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
+		ttlSec := 30
+		pacs[i] = NewPac(x, y, sprites, ttlSec)
+	}
+	return pacs
+}
+
+type Game struct {
+	points       int
+	win          *pixelgl.Window
+	shotSprites  []*pixel.Sprite
+	ghostSprites []*pixel.Sprite
+	pacSprites   []*pixel.Sprite
+	shots        []*Shot
+	ghosts       []*Ghost
+	pacs         []*Pac
+}
+
+func NewGame(win *pixelgl.Window) *Game {
+	g := &Game{
+		points: 0,
+		win:    win,
+	}
+
+	g.loadSprites()
+	go g.spawnGhostsRoutine()
+	go g.spawnPacsRoutine()
+
+	return g
+}
+
+func checkCollision(x1, y1, x2, y2 float64, boxsize float64) bool {
+	return x1 < x2+boxsize &&
+		x1+boxsize > x2 &&
+		y1 < y2+boxsize &&
+		boxsize+y1 > y2
+}
+
+func (g *Game) resolveCollisions() {
+	for _, ghost := range g.ghosts {
+		for _, shot := range g.shots {
+			if checkCollision(ghost.x, ghost.y, shot.x, shot.y, 16.0) {
+				g.points++
+				ghost.Kill()
+			}
+		}
+	}
+
+	for _, pac := range g.pacs {
+		for _, shot := range g.shots {
+			if checkCollision(pac.x, pac.y, shot.x, shot.y, 32.0) {
+				g.points += 10
+				pac.Kill()
+			}
+		}
+	}
+}
+
 func (f *Game) loadShotSprites() {
 	spritesheet, err := loadPicture("shot.png")
 	if err != nil {
@@ -32,6 +108,20 @@ func (f *Game) loadShotSprites() {
 	endY := spritesheet.Bounds().Max.Y
 
 	f.shotSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
+}
+
+func (f *Game) loadPacSprites() {
+	spritesheet, err := loadPicture("pac.png")
+	if err != nil {
+		panic(err)
+	}
+
+	startX := spritesheet.Bounds().Min.X
+	startY := spritesheet.Bounds().Min.Y
+	endX := spritesheet.Bounds().Max.X
+	endY := spritesheet.Bounds().Max.Y
+
+	f.pacSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
 }
 
 func (f *Game) loadGhostSprites() {
@@ -52,50 +142,47 @@ func (f *Game) loadGhostSprites() {
 func (f *Game) loadSprites() {
 	f.loadGhostSprites()
 	f.loadShotSprites()
-}
-
-func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
-	ghosts := make([]*Ghost, amount)
-	for i := 0; i < amount; i++ {
-		x := float64(RandIntInRange(int(win.Bounds().Min.X), int(win.Bounds().Max.X)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y), int(win.Bounds().Max.Y)))
-		ghosts[i] = NewGhost(x, y, sprites)
-	}
-	return ghosts
+	f.loadPacSprites()
 }
 
 func (g *Game) spawnGhostsRoutine() {
 	for {
-		time.Sleep(1 * time.Second)
+		s := RandIntInRange(GhostSpawnIntervalMin, GhostSpawnIntervalMax)
+		time.Sleep(time.Duration(s * int(time.Millisecond)))
 		g.ghosts = append(g.ghosts, spawnGhosts(g.win, g.ghostSprites, 1)...)
 	}
 }
 
-type Game struct {
-	win          *pixelgl.Window
-	shotSprites  []*pixel.Sprite
-	ghostSprites []*pixel.Sprite
-	shots        []*Shot
-	ghosts       []*Ghost
+func (g *Game) spawnPacsRoutine() {
+	for {
+		s := RandIntInRange(PacSpawnIntervalMin, PacSpawnIntervalMax)
+		time.Sleep(time.Duration(s * int(time.Millisecond)))
+		g.pacs = append(g.pacs, spawnPacs(g.win, g.pacSprites, 1)...)
+	}
 }
 
-func NewGame(win *pixelgl.Window) *Game {
-	g := &Game{
-		win: win,
-	}
-
-	g.loadSprites()
-	go g.spawnGhostsRoutine()
-
-	return g
+func (f *Game) AddShot(pos pixel.Vec) {
+	shot := NewShot(pos.X, pos.Y, f.shotSprites)
+	f.shots = append(f.shots, shot)
 }
 
 func (g *Game) Update() {
+	g.resolveCollisions()
+
 	i := len(g.ghosts) - 1
 	for i >= 0 {
 		g.ghosts[i].Update()
 		if g.ghosts[i].IsDead() {
 			g.ghosts = append(g.ghosts[:i], g.ghosts[i+1:]...)
+		}
+		i--
+	}
+
+	i = len(g.pacs) - 1
+	for i >= 0 {
+		g.pacs[i].Update()
+		if g.pacs[i].IsDead() {
+			g.pacs = append(g.pacs[:i], g.pacs[i+1:]...)
 		}
 		i--
 	}
@@ -110,16 +197,21 @@ func (g *Game) Update() {
 	}
 }
 
-func (f *Game) AddShot(pos pixel.Vec) {
-	shot := NewShot(pos.X, pos.Y, f.shotSprites)
-	f.shots = append(f.shots, shot)
-}
-
-func (f *Game) Draw(win *pixelgl.Window) {
-	for _, ghost := range f.ghosts {
+func (g *Game) Draw(win *pixelgl.Window) {
+	for _, ghost := range g.ghosts {
 		ghost.Draw(win)
 	}
-	for _, shot := range f.shots {
+	for _, shot := range g.shots {
 		shot.Draw(win)
 	}
+	for _, pac := range g.pacs {
+		pac.Draw(win)
+	}
+
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt := text.New(pixel.V(20, 30), basicAtlas)
+
+	fmt.Fprintf(basicTxt, "SCORE: %d\n", g.points)
+	fmt.Fprintln(basicTxt, "Click to shoot")
+	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 1.3))
 }

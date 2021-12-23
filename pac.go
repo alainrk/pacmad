@@ -1,47 +1,61 @@
 package main
 
 import (
+	"math"
+	"time"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
 
 type Pac struct {
-	x      float64
-	y      float64
-	angle  float64
-	sprite *pixel.Sprite
+	_createdAt time.Time
+	_dead      bool
+	x          float64
+	y          float64
+	direction  pixel.Vec
+	sprites    []*pixel.Sprite
+	matrix     pixel.Matrix
+	animation  *Animation
+	ttlSec     int
 }
 
-func (p *Pac) move(dx, dy, maxx, maxy float64) {
-	p.x += dx
-	p.y += dy
-}
-
-func NewPac() *Pac {
-	pic, err := loadPicture("pac.png")
-	if err != nil {
-		panic(err)
-	}
-
-	sprite := pixel.NewSprite(pic, pic.Bounds())
-
-	return &Pac{
-		x:      0,
-		y:      0,
-		angle:  0,
-		sprite: sprite,
-	}
-}
-
-func (p *Pac) Move(dt float64) {
-	p.angle += 5 * dt
-	p.x += 1000 * dt
-	p.y += 1000 * dt
+func NewPac(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Pac {
+	animation := NewAnimation(100*time.Millisecond, sprites, true)
+	now := time.Now()
+	dx, dy := RandFloatInRange(-1, 1), RandFloatInRange(-1, 1)
+	direction := pixel.V(dx, dy)
+	angle := math.Atan2(direction.Y, direction.X)
+	matrix := pixel.IM.Rotated(pixel.ZV, angle).Scaled(pixel.ZV, 1).Moved(pixel.V(x, y))
+	return &Pac{now, false, x, y, direction, sprites, matrix, animation, ttlSec}
 }
 
 func (p *Pac) Draw(win *pixelgl.Window) {
-	mat := pixel.IM
-	mat = mat.Moved(pixel.V(p.x, p.y))
-	mat = mat.ScaledXY(win.Bounds().Center(), pixel.V(0.02, 0.02))
-	p.sprite.Draw(win, mat)
+	if p._dead {
+		return
+	}
+
+	sprite := p.animation.GetCurrentSprite()
+	sprite.Draw(win, p.matrix)
+}
+
+func (p *Pac) Update() {
+	p.animation.Update()
+
+	newVec := pixel.V(p.x, p.y).Add(p.direction)
+	p.x = newVec.X
+	p.y = newVec.Y
+	p.matrix = p.matrix.Moved(pixel.V(p.direction.X, p.direction.Y))
+
+	if p._createdAt.Add(time.Duration(p.ttlSec) * time.Second).Before(time.Now()) {
+		p._dead = true
+	}
+}
+
+func (p *Pac) Kill() {
+	p._dead = true
+}
+
+func (p *Pac) IsDead() bool {
+	return p._dead
 }

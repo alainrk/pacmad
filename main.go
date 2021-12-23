@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math/rand"
 	"os"
 	"time"
 
@@ -12,12 +13,12 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-var (
-	camPos       = pixel.ZV
-	camSpeed     = 500.0
-	camZoom      = 1.0
-	camZoomSpeed = 1.01
-)
+// var (
+// 	camPos       = pixel.ZV
+// 	camSpeed     = 500.0
+// 	camZoom      = 1.0
+// 	camZoomSpeed = 1.01
+// )
 
 func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
@@ -37,15 +38,11 @@ func CreateWindow() *pixelgl.Window {
 
 func run() {
 	win := CreateWindow()
-	pac := NewPac()
 	game := NewGame(win)
-	lastTime := time.Now()
 
 	// Main Loop
 	for !win.Closed() {
 		// Keep consistent FPS rate, adjusting the rotation (in this case) according to the time elapsed since the last frame.
-		dt := time.Since(lastTime).Seconds()
-		lastTime = time.Now()
 
 		// -- Cam
 		// cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
@@ -66,7 +63,6 @@ func run() {
 		// camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
 
 		// --- Actions
-		pac.Move(-dt)
 		game.Update()
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
@@ -78,10 +74,7 @@ func run() {
 		// --- Draw
 		win.Clear(colornames.Black)
 
-		// Pac
-		pac.Draw(win)
-
-		// Trees
+		// Game
 		game.Draw(win)
 
 		win.Update()
@@ -102,6 +95,7 @@ func loadPicture(path string) (pixel.Picture, error) {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	// Locks current goroutine on it's current thread
 	// https://github.com/faiface/pixel/wiki/Creating-a-Window#run
 	pixelgl.Run(run)
