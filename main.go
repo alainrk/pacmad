@@ -67,8 +67,7 @@ func run() {
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
 			// mouse := cam.Unproject(win.MousePosition())
-			mouse := win.MousePosition()
-			game.AddShot(mouse)
+			game.AddShot(win.Bounds().Center(), win.MousePosition())
 		}
 
 		// --- Draw
