@@ -45,15 +45,22 @@ func spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac 
 	return pacs
 }
 
+func spawnShip(win *pixelgl.Window, sprites []*pixel.Sprite) *Ship {
+	ship := NewShip(win.Bounds().Center().X, win.Bounds().Center().Y, sprites)
+	return ship
+}
+
 type Game struct {
 	points       int
 	win          *pixelgl.Window
 	shotSprites  []*pixel.Sprite
 	ghostSprites []*pixel.Sprite
 	pacSprites   []*pixel.Sprite
+	shipSprites  []*pixel.Sprite
 	shots        []*Shot
 	ghosts       []*Ghost
 	pacs         []*Pac
+	ship         *Ship
 }
 
 func NewGame(win *pixelgl.Window) *Game {
@@ -63,6 +70,7 @@ func NewGame(win *pixelgl.Window) *Game {
 	}
 
 	g.loadSprites()
+	g.ship = spawnShip(win, g.shipSprites)
 	go g.spawnGhostsRoutine()
 	go g.spawnPacsRoutine()
 
@@ -133,6 +141,20 @@ func (f *Game) loadPacSprites() {
 	f.pacSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
 }
 
+func (f *Game) loadShipSprites() {
+	spritesheet, err := loadPicture("ship.png")
+	if err != nil {
+		panic(err)
+	}
+
+	startX := spritesheet.Bounds().Min.X
+	startY := spritesheet.Bounds().Min.Y
+	endX := spritesheet.Bounds().Max.X
+	endY := spritesheet.Bounds().Max.Y
+
+	f.shipSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
+}
+
 func (f *Game) loadGhostSprites() {
 	spritesheet, err := loadPicture("pmsprites.png")
 	if err != nil {
@@ -152,6 +174,7 @@ func (f *Game) loadSprites() {
 	f.loadGhostSprites()
 	f.loadShotSprites()
 	f.loadPacSprites()
+	f.loadShipSprites()
 }
 
 func (g *Game) spawnGhostsRoutine() {
@@ -204,6 +227,8 @@ func (g *Game) Update() {
 		}
 		i--
 	}
+
+	g.ship.Update(g.win.MousePosition())
 }
 
 func (g *Game) Draw(win *pixelgl.Window) {
@@ -216,6 +241,8 @@ func (g *Game) Draw(win *pixelgl.Window) {
 	for _, pac := range g.pacs {
 		pac.Draw(win)
 	}
+
+	g.ship.Draw(win)
 
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 	basicTxt := text.New(pixel.V(20, 30), basicAtlas)
