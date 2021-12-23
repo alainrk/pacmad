@@ -36,5 +36,5 @@ func (g *Ghost) Kill() {
 }
 
 func (g *Ghost) IsDead() bool {
-	return false
+	return g._dead
 }

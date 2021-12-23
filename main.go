@@ -12,12 +12,12 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-var (
-	camPos       = pixel.ZV
-	camSpeed     = 500.0
-	camZoom      = 1.0
-	camZoomSpeed = 1.01
-)
+// var (
+// 	camPos       = pixel.ZV
+// 	camSpeed     = 500.0
+// 	camZoom      = 1.0
+// 	camZoomSpeed = 1.01
+// )
 
 func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{

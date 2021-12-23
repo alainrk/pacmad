@@ -20,6 +20,55 @@ func createSprites(spritesheet *pixel.Picture, minX, minY, maxX, maxY, step floa
 	return sprites
 }
 
+func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
+	ghosts := make([]*Ghost, amount)
+	for i := 0; i < amount; i++ {
+		x := float64(RandIntInRange(int(win.Bounds().Min.X+16), int(win.Bounds().Max.X-16)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+50), int(win.Bounds().Max.Y-16)))
+		ghosts[i] = NewGhost(x, y, sprites)
+	}
+	return ghosts
+}
+
+type Game struct {
+	points       int
+	win          *pixelgl.Window
+	shotSprites  []*pixel.Sprite
+	ghostSprites []*pixel.Sprite
+	shots        []*Shot
+	ghosts       []*Ghost
+}
+
+func NewGame(win *pixelgl.Window) *Game {
+	g := &Game{
+		points: 0,
+		win:    win,
+	}
+
+	g.loadSprites()
+	go g.spawnGhostsRoutine()
+
+	return g
+}
+
+func checkCollision(x1, y1, x2, y2 float64, boxsize float64) bool {
+	return x1 < x2+boxsize &&
+		x1+boxsize > x2 &&
+		y1 < y2+boxsize &&
+		boxsize+y1 > y2
+}
+
+func (g *Game) resolveCollisions() {
+	for _, ghost := range g.ghosts {
+		for _, shot := range g.shots {
+			if checkCollision(ghost.x, ghost.y, shot.x, shot.y, 16.0) {
+				g.points++
+				ghost.Kill()
+			}
+		}
+	}
+}
+
 func (f *Game) loadShotSprites() {
 	spritesheet, err := loadPicture("shot.png")
 	if err != nil {
@@ -54,43 +103,22 @@ func (f *Game) loadSprites() {
 	f.loadShotSprites()
 }
 
-func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
-	ghosts := make([]*Ghost, amount)
-	for i := 0; i < amount; i++ {
-		x := float64(RandIntInRange(int(win.Bounds().Min.X), int(win.Bounds().Max.X)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y), int(win.Bounds().Max.Y)))
-		ghosts[i] = NewGhost(x, y, sprites)
-	}
-	return ghosts
-}
-
 func (g *Game) spawnGhostsRoutine() {
 	for {
-		time.Sleep(1 * time.Second)
+		s := RandIntInRange(200, 1300)
+		time.Sleep(time.Duration(s * int(time.Millisecond)))
 		g.ghosts = append(g.ghosts, spawnGhosts(g.win, g.ghostSprites, 1)...)
 	}
 }
 
-type Game struct {
-	win          *pixelgl.Window
-	shotSprites  []*pixel.Sprite
-	ghostSprites []*pixel.Sprite
-	shots        []*Shot
-	ghosts       []*Ghost
-}
-
-func NewGame(win *pixelgl.Window) *Game {
-	g := &Game{
-		win: win,
-	}
-
-	g.loadSprites()
-	go g.spawnGhostsRoutine()
-
-	return g
+func (f *Game) AddShot(pos pixel.Vec) {
+	shot := NewShot(pos.X, pos.Y, f.shotSprites)
+	f.shots = append(f.shots, shot)
 }
 
 func (g *Game) Update() {
+	g.resolveCollisions()
+
 	i := len(g.ghosts) - 1
 	for i >= 0 {
 		g.ghosts[i].Update()
@@ -108,11 +136,6 @@ func (g *Game) Update() {
 		}
 		i--
 	}
-}
-
-func (f *Game) AddShot(pos pixel.Vec) {
-	shot := NewShot(pos.X, pos.Y, f.shotSprites)
-	f.shots = append(f.shots, shot)
 }
 
 func (f *Game) Draw(win *pixelgl.Window) {
