@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"time"
 
 	"github.com/faiface/pixel"
@@ -20,15 +21,20 @@ type Pac struct {
 }
 
 func NewPac(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Pac {
-	matrix := pixel.IM.Scaled(pixel.ZV, 1).Moved(pixel.V(x, y))
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
 	now := time.Now()
 	dx, dy := RandFloatInRange(-1, 1), RandFloatInRange(-1, 1)
 	direction := pixel.V(dx, dy)
+	angle := math.Atan2(direction.Y, direction.X)
+	matrix := pixel.IM.Rotated(pixel.ZV, angle).Scaled(pixel.ZV, 1).Moved(pixel.V(x, y))
 	return &Pac{now, false, x, y, direction, sprites, matrix, animation, ttlSec}
 }
 
 func (p *Pac) Draw(win *pixelgl.Window) {
+	if p._dead {
+		return
+	}
+
 	sprite := p.animation.GetCurrentSprite()
 	sprite.Draw(win, p.matrix)
 }

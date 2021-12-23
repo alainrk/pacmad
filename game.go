@@ -37,9 +37,9 @@ func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Gh
 func spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac {
 	pacs := make([]*Pac, amount)
 	for i := 0; i < amount; i++ {
-		x := float64(RandIntInRange(int(win.Bounds().Min.X+16), int(win.Bounds().Max.X-16)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y+60), int(win.Bounds().Max.Y-16)))
-		ttlSec := 5
+		x := float64(RandIntInRange(int(win.Bounds().Min.X+WindowBoundaryDelta), int(win.Bounds().Max.X-WindowBoundaryDelta)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+WindowBoundaryDeltaY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
+		ttlSec := 30
 		pacs[i] = NewPac(x, y, sprites, ttlSec)
 	}
 	return pacs
@@ -147,7 +147,7 @@ func (f *Game) loadSprites() {
 
 func (g *Game) spawnGhostsRoutine() {
 	for {
-		s := RandIntInRange(200, 1300)
+		s := RandIntInRange(GhostSpawnIntervalMin, GhostSpawnIntervalMax)
 		time.Sleep(time.Duration(s * int(time.Millisecond)))
 		g.ghosts = append(g.ghosts, spawnGhosts(g.win, g.ghostSprites, 1)...)
 	}
@@ -155,11 +155,9 @@ func (g *Game) spawnGhostsRoutine() {
 
 func (g *Game) spawnPacsRoutine() {
 	for {
-		s := RandIntInRange(500, 1000)
-		fmt.Println("SPAWNING PAC")
+		s := RandIntInRange(PacSpawnIntervalMin, PacSpawnIntervalMax)
 		time.Sleep(time.Duration(s * int(time.Millisecond)))
 		g.pacs = append(g.pacs, spawnPacs(g.win, g.pacSprites, 1)...)
-		fmt.Println("SPAWNED PAC", len(g.pacs))
 	}
 }
 
@@ -205,6 +203,9 @@ func (g *Game) Draw(win *pixelgl.Window) {
 	}
 	for _, shot := range g.shots {
 		shot.Draw(win)
+	}
+	for _, pac := range g.pacs {
+		pac.Draw(win)
 	}
 
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
