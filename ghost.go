@@ -7,43 +7,34 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
-const ghostStageDuration = 35 * time.Millisecond
-
 type Ghost struct {
+	_dead     bool
 	x         float64
 	y         float64
-	createdAt time.Time
-	lastStage time.Time
 	sprites   []*pixel.Sprite
 	matrix    pixel.Matrix
-	stage     int
-	dead      bool
+	animation *Animation
 }
 
-func NewGhost(x float64, y float64, sprites []*pixel.Sprite) *Ghost {
-	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.Vec{x, y})
-	now := time.Now()
-	ghost := &Ghost{x, y, now, now, sprites, matrix, 0, false}
-	return ghost
+func NewGhost(x, y float64, sprites []*pixel.Sprite) *Ghost {
+	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.V(x, y))
+	animation := NewAnimation(100*time.Millisecond, sprites, true)
+	return &Ghost{false, x, y, sprites, matrix, animation}
 }
 
-func (s *Ghost) Draw(win *pixelgl.Window) {
-	sprite := s.sprites[s.stage]
-	sprite.Draw(win, s.matrix)
+func (g *Ghost) Draw(win *pixelgl.Window) {
+	sprite := g.animation.GetCurrentSprite()
+	sprite.Draw(win, g.matrix)
 }
 
-func (s *Ghost) Update() {
-	if s.dead {
-		return
-	}
+func (g *Ghost) Update() {
+	g.animation.Update()
+}
 
-	now := time.Now()
-	if now.Sub(s.lastStage) >= ghostStageDuration {
-		s.stage++
-		s.lastStage = time.Now()
-	}
+func (g *Ghost) Kill() {
+	g._dead = true
+}
 
-	if s.stage >= len(s.sprites) {
-		s.dead = true
-	}
+func (g *Ghost) IsDead() bool {
+	return false
 }
