@@ -1,8 +1,8 @@
 package main
 
 const (
-	PacSpawnIntervalMin = 200
-	PacSpawnIntervalMax = 300
+	PacSpawnIntervalMin = 1200
+	PacSpawnIntervalMax = 2300
 
 	GhostSpawnIntervalMin = 300
 	GhostSpawnIntervalMax = 1200
