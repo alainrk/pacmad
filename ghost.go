@@ -8,18 +8,21 @@ import (
 )
 
 type Ghost struct {
-	_dead     bool
-	x         float64
-	y         float64
-	sprites   []*pixel.Sprite
-	matrix    pixel.Matrix
-	animation *Animation
+	_createdAt time.Time
+	_dead      bool
+	x          float64
+	y          float64
+	sprites    []*pixel.Sprite
+	matrix     pixel.Matrix
+	animation  *Animation
+	ttlSec     int
 }
 
-func NewGhost(x, y float64, sprites []*pixel.Sprite) *Ghost {
+func NewGhost(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Ghost {
 	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.V(x, y))
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
-	return &Ghost{false, x, y, sprites, matrix, animation}
+	now := time.Now()
+	return &Ghost{now, false, x, y, sprites, matrix, animation, ttlSec}
 }
 
 func (g *Ghost) Draw(win *pixelgl.Window) {
@@ -29,6 +32,9 @@ func (g *Ghost) Draw(win *pixelgl.Window) {
 
 func (g *Ghost) Update() {
 	g.animation.Update()
+	if g._createdAt.Add(time.Duration(g.ttlSec) * time.Second).Before(time.Now()) {
+		g._dead = true
+	}
 }
 
 func (g *Ghost) Kill() {

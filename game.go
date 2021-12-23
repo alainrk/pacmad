@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/font/basicfont"
 )
 
 func createSprites(spritesheet *pixel.Picture, minX, minY, maxX, maxY, step float64) []*pixel.Sprite {
@@ -24,8 +27,9 @@ func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Gh
 	ghosts := make([]*Ghost, amount)
 	for i := 0; i < amount; i++ {
 		x := float64(RandIntInRange(int(win.Bounds().Min.X+16), int(win.Bounds().Max.X-16)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y+50), int(win.Bounds().Max.Y-16)))
-		ghosts[i] = NewGhost(x, y, sprites)
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+60), int(win.Bounds().Max.Y-16)))
+		ttlSec := 5
+		ghosts[i] = NewGhost(x, y, sprites, ttlSec)
 	}
 	return ghosts
 }
@@ -138,11 +142,18 @@ func (g *Game) Update() {
 	}
 }
 
-func (f *Game) Draw(win *pixelgl.Window) {
-	for _, ghost := range f.ghosts {
+func (g *Game) Draw(win *pixelgl.Window) {
+	for _, ghost := range g.ghosts {
 		ghost.Draw(win)
 	}
-	for _, shot := range f.shots {
+	for _, shot := range g.shots {
 		shot.Draw(win)
 	}
+
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt := text.New(pixel.V(20, 30), basicAtlas)
+
+	fmt.Fprintf(basicTxt, "SCORE: %d\n", g.points)
+	fmt.Fprintln(basicTxt, "Click to shoot")
+	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 1.3))
 }
