@@ -87,6 +87,15 @@ func (g *Game) resolveCollisions() {
 	}
 
 	for _, pac := range g.pacs {
+		for _, ghost := range g.ghosts {
+			if checkCollision(pac.x, pac.y, ghost.x, ghost.y, 32.0, 32.0, 16.0, 16.0) {
+				g.points -= 10
+				pac.Kill()
+			}
+		}
+	}
+
+	for _, pac := range g.pacs {
 		for _, shot := range g.shots {
 			if checkCollision(pac.x, pac.y, shot.x, shot.y, 32.0, 32.0, 16.0, 16.0) {
 				g.points += 10
