@@ -1,6 +1,5 @@
 # Pacmad
 [![YourActionName Actions Status](https://github.com/alainrk/pacmad/workflows/Go/badge.svg)](https://github.com/alainrk/pacmad/actions)
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
 ## Usage
 ```

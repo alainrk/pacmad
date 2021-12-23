@@ -8,6 +8,7 @@
 # Runtime assets
 bin/*
 !bin/.gitkeep
+pacmad
 
 # Test binary, built with `go test -c`
 *.test
