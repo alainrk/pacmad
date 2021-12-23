@@ -2,7 +2,6 @@ package main
 
 import (
 	"image"
-	"math"
 	"os"
 	"time"
 
@@ -32,7 +31,7 @@ func CreateWindow() *pixelgl.Window {
 		panic(err)
 	}
 
-	// win.SetSmooth(true)
+	win.SetSmooth(true)
 	return win
 }
 
@@ -49,29 +48,30 @@ func run() {
 		lastTime = time.Now()
 
 		// -- Cam
-		cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
-		win.SetMatrix(cam)
+		// cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
+		// win.SetMatrix(cam)
 
-		if win.Pressed(pixelgl.KeyLeft) {
-			camPos.X -= camSpeed * dt
-		}
-		if win.Pressed(pixelgl.KeyRight) {
-			camPos.X += camSpeed * dt
-		}
-		if win.Pressed(pixelgl.KeyDown) {
-			camPos.Y -= camSpeed * dt
-		}
-		if win.Pressed(pixelgl.KeyUp) {
-			camPos.Y += camSpeed * dt
-		}
-		camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
+		// if win.Pressed(pixelgl.KeyLeft) {
+		// 	camPos.X -= camSpeed * dt
+		// }
+		// if win.Pressed(pixelgl.KeyRight) {
+		// 	camPos.X += camSpeed * dt
+		// }
+		// if win.Pressed(pixelgl.KeyDown) {
+		// 	camPos.Y -= camSpeed * dt
+		// }
+		// if win.Pressed(pixelgl.KeyUp) {
+		// 	camPos.Y += camSpeed * dt
+		// }
+		// camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
 
 		// --- Actions
 		pac.Move(-dt)
 		game.Update()
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			mouse := cam.Unproject(win.MousePosition())
+			// mouse := cam.Unproject(win.MousePosition())
+			mouse := win.MousePosition()
 			game.AddShot(mouse)
 		}
 

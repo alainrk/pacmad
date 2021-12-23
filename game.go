@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
@@ -62,6 +64,13 @@ func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Gh
 	return ghosts
 }
 
+func (g *Game) spawnGhostsRoutine() {
+	for {
+		time.Sleep(1 * time.Second)
+		g.ghosts = append(g.ghosts, spawnGhosts(g.win, g.ghostSprites, 1)...)
+	}
+}
+
 type Game struct {
 	win          *pixelgl.Window
 	shotSprites  []*pixel.Sprite
@@ -71,31 +80,31 @@ type Game struct {
 }
 
 func NewGame(win *pixelgl.Window) *Game {
-	game := &Game{
+	g := &Game{
 		win: win,
 	}
 
-	game.loadSprites()
-	game.ghosts = spawnGhosts(win, game.ghostSprites, 10)
+	g.loadSprites()
+	go g.spawnGhostsRoutine()
 
-	return game
+	return g
 }
 
-func (f *Game) Update() {
-	i := len(f.ghosts) - 1
+func (g *Game) Update() {
+	i := len(g.ghosts) - 1
 	for i >= 0 {
-		f.ghosts[i].Update()
-		if f.ghosts[i].IsDead() {
-			f.ghosts = append(f.ghosts[:i], f.ghosts[i+1:]...)
+		g.ghosts[i].Update()
+		if g.ghosts[i].IsDead() {
+			g.ghosts = append(g.ghosts[:i], g.ghosts[i+1:]...)
 		}
 		i--
 	}
 
-	i = len(f.shots) - 1
+	i = len(g.shots) - 1
 	for i >= 0 {
-		f.shots[i].Update()
-		if f.shots[i].IsDead() {
-			f.shots = append(f.shots[:i], f.shots[i+1:]...)
+		g.shots[i].Update()
+		if g.shots[i].IsDead() {
+			g.shots = append(g.shots[:i], g.shots[i+1:]...)
 		}
 		i--
 	}

@@ -8,6 +8,7 @@ import (
 )
 
 type Ghost struct {
+	_dead     bool
 	x         float64
 	y         float64
 	sprites   []*pixel.Sprite
@@ -18,7 +19,7 @@ type Ghost struct {
 func NewGhost(x, y float64, sprites []*pixel.Sprite) *Ghost {
 	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.V(x, y))
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
-	return &Ghost{x, y, sprites, matrix, animation}
+	return &Ghost{false, x, y, sprites, matrix, animation}
 }
 
 func (g *Ghost) Draw(win *pixelgl.Window) {
@@ -30,6 +31,10 @@ func (g *Ghost) Update() {
 	g.animation.Update()
 }
 
+func (g *Ghost) Kill() {
+	g._dead = true
+}
+
 func (g *Ghost) IsDead() bool {
-	return g.animation.IsDead()
+	return false
 }
