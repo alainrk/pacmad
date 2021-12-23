@@ -39,7 +39,7 @@ func CreateWindow() *pixelgl.Window {
 func run() {
 	win := CreateWindow()
 	pac := NewPac()
-	game := NewGame()
+	game := NewGame(win)
 	lastTime := time.Now()
 
 	// Main Loop
@@ -76,7 +76,7 @@ func run() {
 		}
 
 		// --- Draw
-		win.Clear(colornames.White)
+		win.Clear(colornames.Black)
 
 		// Pac
 		pac.Draw(win)

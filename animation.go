@@ -43,7 +43,11 @@ func (a *Animation) Update() {
 
 	now := time.Now()
 	if now.Sub(a._lastStage) >= a.stageDuration {
-		a._stage++
+		if a.loop {
+			a._stage = (a._stage + 1) % len(a.sprites)
+		} else {
+			a._stage++
+		}
 		a._lastStage = time.Now()
 	}
 

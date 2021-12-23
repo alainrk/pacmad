@@ -52,32 +52,52 @@ func (f *Game) loadSprites() {
 	f.loadShotSprites()
 }
 
+func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
+	ghosts := make([]*Ghost, amount)
+	for i := 0; i < amount; i++ {
+		x := float64(RandIntInRange(int(win.Bounds().Min.X), int(win.Bounds().Max.X)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y), int(win.Bounds().Max.Y)))
+		ghosts[i] = NewGhost(x, y, sprites)
+	}
+	return ghosts
+}
+
 type Game struct {
+	win          *pixelgl.Window
 	shotSprites  []*pixel.Sprite
 	ghostSprites []*pixel.Sprite
 	shots        []*Shot
 	ghosts       []*Ghost
 }
 
-func NewGame() *Game {
+func NewGame(win *pixelgl.Window) *Game {
 	game := &Game{
-		shotSprites:  nil,
-		ghostSprites: nil,
-		shots:        []*Shot{},
-		ghosts:       []*Ghost{},
+		win: win,
 	}
 
 	game.loadSprites()
+	game.ghosts = spawnGhosts(win, game.ghostSprites, 10)
 
 	return game
 }
 
 func (f *Game) Update() {
-	for i, shot := range f.shots {
-		shot.Update()
-		if shot.IsDead() {
+	i := len(f.ghosts) - 1
+	for i >= 0 {
+		f.ghosts[i].Update()
+		if f.ghosts[i].IsDead() {
+			f.ghosts = append(f.ghosts[:i], f.ghosts[i+1:]...)
+		}
+		i--
+	}
+
+	i = len(f.shots) - 1
+	for i >= 0 {
+		f.shots[i].Update()
+		if f.shots[i].IsDead() {
 			f.shots = append(f.shots[:i], f.shots[i+1:]...)
 		}
+		i--
 	}
 }
 
@@ -86,17 +106,10 @@ func (f *Game) AddShot(pos pixel.Vec) {
 	f.shots = append(f.shots, shot)
 }
 
-func (f *Game) drawPacmanSpritesForTestJustRemoveThisFunction(win *pixelgl.Window) {
-	for i, ghost := range f.ghostSprites {
-		mat := pixel.IM
-		mat = mat.Moved(pixel.V(float64(i*16)+float64(i*2.0), 0))
-		ghost.Draw(win, mat)
-	}
-}
-
 func (f *Game) Draw(win *pixelgl.Window) {
-	f.drawPacmanSpritesForTestJustRemoveThisFunction(win)
-
+	for _, ghost := range f.ghosts {
+		ghost.Draw(win)
+	}
 	for _, shot := range f.shots {
 		shot.Draw(win)
 	}

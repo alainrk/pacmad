@@ -16,8 +16,8 @@ type Ghost struct {
 }
 
 func NewGhost(x, y float64, sprites []*pixel.Sprite) *Ghost {
-	matrix := pixel.IM.Scaled(pixel.ZV, 2).Moved(pixel.V(x, y))
-	animation := NewAnimation(35*time.Millisecond, sprites, false)
+	matrix := pixel.IM.Scaled(pixel.ZV, 1.5).Moved(pixel.V(x, y))
+	animation := NewAnimation(100*time.Millisecond, sprites, true)
 	return &Ghost{x, y, sprites, matrix, animation}
 }
 
