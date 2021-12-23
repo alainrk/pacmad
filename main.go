@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math/rand"
 	"os"
 	"time"
 
@@ -102,6 +103,7 @@ func loadPicture(path string) (pixel.Picture, error) {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	// Locks current goroutine on it's current thread
 	// https://github.com/faiface/pixel/wiki/Creating-a-Window#run
 	pixelgl.Run(run)
