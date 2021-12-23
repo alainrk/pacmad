@@ -75,7 +75,7 @@ func NewGame() *Game {
 func (f *Game) Update() {
 	for i, shot := range f.shots {
 		shot.Update()
-		if shot.dead {
+		if shot.IsDead() {
 			f.shots = append(f.shots[:i], f.shots[i+1:]...)
 		}
 	}

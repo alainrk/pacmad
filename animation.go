@@ -28,7 +28,7 @@ func NewAnimation(stageDuration time.Duration, sprites []*pixel.Sprite, loop boo
 	return animation
 }
 
-func (a *Animation) CurrentSprite() *pixel.Sprite {
+func (a *Animation) GetCurrentSprite() *pixel.Sprite {
 	return a.sprites[a._stage]
 }
 
