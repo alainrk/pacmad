@@ -1,11 +1,21 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
+
+func createSpriteFromSheet(spritesheet pixel.Picture, minX, minY, maxX, maxY, step float64) []*pixel.Sprite {
+	sprites := []*pixel.Sprite{}
+
+	for y := minY; y < minY; y += step {
+		for x := minX; x < maxX; x += step {
+			frame := pixel.R(x, y, x+step, y+step)
+			sprites = append(sprites, pixel.NewSprite(spritesheet, frame))
+		}
+	}
+	return sprites
+}
 
 type Game struct {
 	shotSprites  []*pixel.Sprite
@@ -31,7 +41,7 @@ func NewGame() *Game {
 		}
 	}
 
-	ghostSprites := []*pixel.Sprite{}
+	// ghostSprites := []*pixel.Sprite{}
 
 	step := 16.0
 	startX := ghostSpritesheet.Bounds().Max.X/3*2 + 3
@@ -39,13 +49,21 @@ func NewGame() *Game {
 	endX := startX + (step * 8)
 	endY := startY + step
 
-	for y := startY; y < endY; y += step {
-		for x := startX; x < endX; x += step {
-			frame := pixel.R(x, y, x+step, y+step)
-			ghostSprites = append(ghostSprites, pixel.NewSprite(ghostSpritesheet, frame))
-		}
-	}
-	fmt.Println(len(ghostSprites))
+	// for y := startY; y < endY; y += step {
+	// 	for x := startX; x < endX; x += step {
+	// 		frame := pixel.R(x, y, x+step, y+step)
+	// 		ghostSprites = append(ghostSprites, pixel.NewSprite(ghostSpritesheet, frame))
+	// 	}
+	// }
+
+	ghostSprites := createSpriteFromSheet(
+		ghostSpritesheet,
+		startX,
+		startY,
+		endX,
+		endY,
+		step,
+	)
 
 	return &Game{
 		shotSprites:  shotSprites,
@@ -77,7 +95,7 @@ func (f *Game) drawPacmanSpritesForTestJustRemoveThisFunction(win *pixelgl.Windo
 }
 
 func (f *Game) Draw(win *pixelgl.Window) {
-	// f.drawPacmanSpritesForTestJustRemoveThisFunction(win)
+	f.drawPacmanSpritesForTestJustRemoveThisFunction(win)
 
 	for _, shot := range f.shots {
 		shot.Draw(win)
