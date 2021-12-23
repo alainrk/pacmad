@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/faiface/pixel"
@@ -25,7 +24,6 @@ func NewGhost(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Ghost {
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
 	now := time.Now()
 	dx, dy := RandFloatInRange(-1, 1), RandFloatInRange(-1, 1)
-	fmt.Println(dx, dy)
 	direction := pixel.V(dx, dy)
 	return &Ghost{now, false, x, y, direction, sprites, matrix, animation, ttlSec}
 }

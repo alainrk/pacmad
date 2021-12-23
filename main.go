@@ -38,15 +38,11 @@ func CreateWindow() *pixelgl.Window {
 
 func run() {
 	win := CreateWindow()
-	pac := NewPac()
 	game := NewGame(win)
-	lastTime := time.Now()
 
 	// Main Loop
 	for !win.Closed() {
 		// Keep consistent FPS rate, adjusting the rotation (in this case) according to the time elapsed since the last frame.
-		dt := time.Since(lastTime).Seconds()
-		lastTime = time.Now()
 
 		// -- Cam
 		// cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
@@ -67,7 +63,6 @@ func run() {
 		// camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
 
 		// --- Actions
-		pac.Move(-dt)
 		game.Update()
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
@@ -79,10 +74,7 @@ func run() {
 		// --- Draw
 		win.Clear(colornames.Black)
 
-		// Pac
-		pac.Draw(win)
-
-		// Trees
+		// Game
 		game.Draw(win)
 
 		win.Update()
