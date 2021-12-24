@@ -42,9 +42,9 @@ func (p *Panel) Draw() {
 	}
 
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt := text.New(pixel.V(20, 30), basicAtlas)
+	basicTxt := text.New(pixel.V(20, 40), basicAtlas)
 
 	fmt.Fprintf(basicTxt, "SCORE: %d\n", p.game.points)
 	fmt.Fprintln(basicTxt, "Click to shoot")
-	basicTxt.Draw(p.win, pixel.IM.Scaled(basicTxt.Orig, 1.3))
+	basicTxt.Draw(p.win, pixel.IM.Scaled(basicTxt.Orig, 1.6))
 }

@@ -1,6 +1,8 @@
 package main
 
 const (
+	startLives = 3
+
 	PacSpawnIntervalMin = 1200
 	PacSpawnIntervalMax = 2300
 	PacScalingFactor    = 1

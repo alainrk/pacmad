@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/colornames"
+	"golang.org/x/image/font/basicfont"
 )
 
 type Game struct {
@@ -27,7 +32,7 @@ func NewGame(win *pixelgl.Window) *Game {
 	g := &Game{
 		points: 0,
 		level:  1,
-		lives:  3,
+		lives:  startLives,
 		paused: false,
 		status: "play",
 		win:    win,
@@ -48,6 +53,11 @@ func (f *Game) AddShot(pos pixel.Vec, dir pixel.Vec) {
 }
 
 func (g *Game) Update() {
+	if g.lives <= 0 {
+		g.status = "gameover"
+		return
+	}
+
 	g.resolveCollisions()
 
 	i := len(g.ghosts) - 1
@@ -80,7 +90,22 @@ func (g *Game) Update() {
 	g.ship.Update(g.win.MousePosition())
 }
 
+func (g *Game) drawGameOver() {
+	g.win.Clear(colornames.Red)
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt := text.New(pixel.V(g.win.Bounds().Center().X-100, g.win.Bounds().Center().Y), basicAtlas)
+
+	fmt.Fprintf(basicTxt, "GAME OVER\n")
+	fmt.Fprintf(basicTxt, "SCORE: %d\n", g.points)
+	basicTxt.Draw(g.win, pixel.IM.Scaled(basicTxt.Orig, 3))
+}
+
 func (g *Game) Draw(win *pixelgl.Window) {
+	if g.status == "gameover" {
+		g.drawGameOver()
+		return
+	}
+
 	for _, ghost := range g.ghosts {
 		ghost.Draw(win)
 	}
