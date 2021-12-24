@@ -20,7 +20,7 @@ func spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac 
 	pacs := make([]*Pac, amount)
 	for i := 0; i < amount; i++ {
 		x := float64(RandIntInRange(int(win.Bounds().Min.X+WindowBoundaryDelta), int(win.Bounds().Max.X-WindowBoundaryDelta)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y+WindowBoundaryDeltaY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
+		y := float64(RandIntInRange(int(win.Bounds().Min.Y+PanelBoundaryY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
 		ttlSec := 30
 		pacs[i] = NewPac(x, y, sprites, ttlSec)
 	}

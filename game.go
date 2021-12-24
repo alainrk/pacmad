@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/faiface/pixel/text"
-	"golang.org/x/image/font/basicfont"
 )
 
 type Game struct {
 	points       int
+	level        int
+	lives        int
+	status       string
+	paused       bool
 	win          *pixelgl.Window
 	shotSprites  []*pixel.Sprite
 	ghostSprites []*pixel.Sprite
@@ -20,11 +20,16 @@ type Game struct {
 	ghosts       []*Ghost
 	pacs         []*Pac
 	ship         *Ship
+	panel        *Panel
 }
 
 func NewGame(win *pixelgl.Window) *Game {
 	g := &Game{
 		points: 0,
+		level:  1,
+		lives:  3,
+		paused: false,
+		status: "play",
 		win:    win,
 	}
 
@@ -33,6 +38,7 @@ func NewGame(win *pixelgl.Window) *Game {
 	go g.spawnGhostsRoutine()
 	go g.spawnPacsRoutine()
 
+	g.panel = NewPanel(PanelBoundaryY, g, win)
 	return g
 }
 
@@ -86,11 +92,5 @@ func (g *Game) Draw(win *pixelgl.Window) {
 	}
 
 	g.ship.Draw(win)
-
-	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt := text.New(pixel.V(20, 30), basicAtlas)
-
-	fmt.Fprintf(basicTxt, "SCORE: %d\n", g.points)
-	fmt.Fprintln(basicTxt, "Click to shoot")
-	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 1.3))
+	g.panel.Draw()
 }
