@@ -34,7 +34,7 @@ func NewGame(win *pixelgl.Window) *Game {
 	}
 
 	g.loadSprites()
-	g.ship = spawnShip(win, g.shipSprites)
+	g.ship = g.spawnShip(win, g.shipSprites)
 	go g.spawnGhostsRoutine()
 	go g.spawnPacsRoutine()
 

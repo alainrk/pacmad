@@ -6,6 +6,7 @@ const (
 	PacScalingFactor    = 1
 
 	ShotScalingFactor = 0.6
+	ShipScalingFactor = 1
 
 	GhostSpawnIntervalMin = 300
 	GhostSpawnIntervalMax = 1200

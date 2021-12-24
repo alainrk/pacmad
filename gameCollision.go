@@ -8,6 +8,7 @@ func checkCollision(x1, y1, x2, y2 float64, box1w, box1h, box2w, box2h float64) 
 }
 
 func (g *Game) resolveCollisions() {
+	// Ghost-Shot collision
 	for _, ghost := range g.ghosts {
 		for _, shot := range g.shots {
 			if checkCollision(ghost.x, ghost.y, shot.x, shot.y, 16.0, 16.0, 16.0*ShotScalingFactor, 16.0*ShotScalingFactor) {
@@ -18,6 +19,7 @@ func (g *Game) resolveCollisions() {
 		}
 	}
 
+	// Pac-Ghost collision
 	for _, pac := range g.pacs {
 		for _, ghost := range g.ghosts {
 			if checkCollision(pac.x, pac.y, ghost.x, ghost.y, 32.0*PacScalingFactor, 32.0*PacScalingFactor, 16.0, 16.0) {
@@ -27,6 +29,7 @@ func (g *Game) resolveCollisions() {
 		}
 	}
 
+	// Pac-Shot collision
 	for _, pac := range g.pacs {
 		for _, shot := range g.shots {
 			if checkCollision(pac.x, pac.y, shot.x, shot.y, 32.0*PacScalingFactor, 32.0*PacScalingFactor, 16.0*ShotScalingFactor, 16.0*ShotScalingFactor) {
@@ -34,6 +37,14 @@ func (g *Game) resolveCollisions() {
 				pac.Kill()
 				shot.Destroy()
 			}
+		}
+	}
+
+	// Ghost-Ship collision
+	for _, ghost := range g.ghosts {
+		if checkCollision(ghost.x, ghost.y, g.ship.x, g.ship.y, 16.0, 16.0, 32.0, 32.0) {
+			g.lives--
+			ghost.Kill()
 		}
 	}
 }

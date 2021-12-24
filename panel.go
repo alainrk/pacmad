@@ -24,7 +24,6 @@ func NewPanel(y float64, game *Game, win *pixelgl.Window) *Panel {
 		hearthSprites: []*pixel.Sprite{},
 	}
 	p.loadHearthSprites()
-	fmt.Println(p.hearthSprites)
 	return p
 }
 
