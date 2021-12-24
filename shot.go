@@ -20,7 +20,7 @@ type Shot struct {
 }
 
 func NewShot(x, y, destX, destY float64, sprites []*pixel.Sprite) *Shot {
-	matrix := pixel.IM.Scaled(pixel.ZV, 0.6).Moved(pixel.V(x, y))
+	matrix := pixel.IM.Scaled(pixel.ZV, ShotScalingFactor).Moved(pixel.V(x, y))
 	animation := NewAnimation(25*time.Millisecond, sprites, true)
 
 	velocity := -0.05

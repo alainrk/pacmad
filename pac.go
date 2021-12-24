@@ -26,7 +26,7 @@ func NewPac(x, y float64, sprites []*pixel.Sprite, ttlSec int) *Pac {
 	dx, dy := RandFloatInRange(-1, 1), RandFloatInRange(-1, 1)
 	direction := pixel.V(dx, dy)
 	angle := math.Atan2(direction.Y, direction.X)
-	matrix := pixel.IM.Rotated(pixel.ZV, angle).Scaled(pixel.ZV, 1).Moved(pixel.V(x, y))
+	matrix := pixel.IM.Rotated(pixel.ZV, angle).Scaled(pixel.ZV, PacScalingFactor).Moved(pixel.V(x, y))
 	return &Pac{now, false, x, y, direction, sprites, matrix, animation, ttlSec}
 }
 
