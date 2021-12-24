@@ -16,7 +16,7 @@ func createSprites(spritesheet *pixel.Picture, minX, minY, maxX, maxY, step floa
 }
 
 func (f *Game) loadShotSprites() {
-	spritesheet, err := loadPicture("shot.png")
+	spritesheet, err := loadPicture("assets/shot.png")
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ func (f *Game) loadShotSprites() {
 }
 
 func (f *Game) loadPacSprites() {
-	spritesheet, err := loadPicture("pac.png")
+	spritesheet, err := loadPicture("assets/pac.png")
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ func (f *Game) loadPacSprites() {
 }
 
 func (f *Game) loadShipSprites() {
-	spritesheet, err := loadPicture("ship.png")
+	spritesheet, err := loadPicture("assets/ship.png")
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ func (f *Game) loadShipSprites() {
 }
 
 func (f *Game) loadGhostSprites() {
-	spritesheet, err := loadPicture("pmsprites.png")
+	spritesheet, err := loadPicture("assets/pmsprites.png")
 	if err != nil {
 		panic(err)
 	}
