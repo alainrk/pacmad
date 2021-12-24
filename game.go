@@ -90,6 +90,7 @@ func (g *Game) resolveCollisions() {
 			if checkCollision(ghost.x, ghost.y, shot.x, shot.y, 16.0, 16.0, 16.0, 16.0) {
 				g.points++
 				ghost.Kill()
+				shot.Destroy()
 			}
 		}
 	}
@@ -108,6 +109,7 @@ func (g *Game) resolveCollisions() {
 			if checkCollision(pac.x, pac.y, shot.x, shot.y, 32.0, 32.0, 16.0, 16.0) {
 				g.points += 10
 				pac.Kill()
+				shot.Destroy()
 			}
 		}
 	}
@@ -193,8 +195,8 @@ func (g *Game) spawnPacsRoutine() {
 	}
 }
 
-func (f *Game) AddShot(pos pixel.Vec) {
-	shot := NewShot(pos.X, pos.Y, f.shotSprites)
+func (f *Game) AddShot(pos pixel.Vec, dir pixel.Vec) {
+	shot := NewShot(pos.X, pos.Y, dir.X, dir.Y, f.shotSprites)
 	f.shots = append(f.shots, shot)
 }
 
@@ -221,7 +223,7 @@ func (g *Game) Update() {
 
 	i = len(g.shots) - 1
 	for i >= 0 {
-		g.shots[i].Update()
+		g.shots[i].Update(g.win)
 		if g.shots[i].IsDead() {
 			g.shots = append(g.shots[:i], g.shots[i+1:]...)
 		}
