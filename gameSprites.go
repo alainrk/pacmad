@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/faiface/pixel"
+)
 
 func (g *Game) loadBackgroundSprites() {
 	spritesheet, err := loadPicture("assets/background.png")
@@ -65,13 +69,21 @@ func (g *Game) loadGhostSprites() {
 		panic(err)
 	}
 
+	ghosts := map[string][]*pixel.Sprite{"orange": nil, "blue": nil, "pink": nil, "red": nil}
+
 	step := 16.0
 	startX := spritesheet.Bounds().Max.X/3*2 + 3
-	startY := 168.0
 	endX := startX + (step * 8)
+
+	startY := float64(120.0)
 	endY := startY + step
 
-	g.ghostSprites = createSprites(&spritesheet, startX, startY, endX, endY, step, step)
+	ghosts["orange"] = createSprites(&spritesheet, startX, startY+0*step, endX, endY+0*step, 16, 16)
+	ghosts["blue"] = createSprites(&spritesheet, startX, startY+1*step, endX, endY+1*step, 16, 16)
+	ghosts["pink"] = createSprites(&spritesheet, startX, startY+2*step, endX, endY+2*step, 16, 16)
+	ghosts["red"] = createSprites(&spritesheet, startX, startY+3*step, endX, endY+3*step, 16, 16)
+
+	g.ghostSprites = ghosts
 }
 
 func (g *Game) loadSprites() {

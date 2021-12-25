@@ -17,8 +17,8 @@ type Game struct {
 	status       string
 	paused       bool
 	win          *pixelgl.Window
+	ghostSprites map[string][]*pixel.Sprite
 	shotSprites  []*pixel.Sprite
-	ghostSprites []*pixel.Sprite
 	pacSprites   []*pixel.Sprite
 	shipSprites  []*pixel.Sprite
 	bgSprites    []*pixel.Sprite

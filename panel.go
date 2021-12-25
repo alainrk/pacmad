@@ -45,6 +45,6 @@ func (p *Panel) Draw() {
 	basicTxt := text.New(pixel.V(20, 40), basicAtlas)
 
 	fmt.Fprintf(basicTxt, "SCORE: %d\n", p.game.points)
-	fmt.Fprintln(basicTxt, "Click to shoot")
+	fmt.Fprintln(basicTxt, "Click or [Space] to shoot")
 	basicTxt.Draw(p.win, pixel.IM.Scaled(basicTxt.Orig, 1.6))
 }

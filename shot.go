@@ -1,11 +1,14 @@
 package main
 
 import (
+	"math"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 )
+
+const minimumShotSpeedComponent = 2
 
 type Shot struct {
 	direction pixel.Vec
@@ -25,6 +28,22 @@ func NewShot(x, y, destX, destY float64, sprites []*pixel.Sprite) *Shot {
 
 	velocity := -0.05
 	direction := pixel.V(x, y).Sub(pixel.V(destX, destY)).Scaled(velocity)
+
+	// Apply a minimum velocity to the shot if too slow
+	if math.Abs(direction.X) < minimumShotSpeedComponent {
+		if direction.X >= 0 {
+			direction.X = minimumShotSpeedComponent
+		} else {
+			direction.X = -minimumShotSpeedComponent
+		}
+	}
+	if math.Abs(direction.Y) < minimumShotSpeedComponent {
+		if direction.Y >= 0 {
+			direction.Y = minimumShotSpeedComponent
+		} else {
+			direction.Y = -minimumShotSpeedComponent
+		}
+	}
 
 	return &Shot{direction, x, y, destX, destY, sprites, matrix, animation, false}
 }

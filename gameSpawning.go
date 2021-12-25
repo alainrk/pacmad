@@ -27,22 +27,25 @@ func generateValidSpawningPosition(win *pixelgl.Window) (float64, float64) {
 	return x, y
 }
 
-func (g *Game) spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
+func (g *Game) spawnGhosts(win *pixelgl.Window, amount int) []*Ghost {
+	ghostsColor := []string{"orange", "blue", "pink", "red"}
+	color := ghostsColor[RandIntInRange(0, len(ghostsColor))]
+
 	ghosts := make([]*Ghost, amount)
 	for i := 0; i < amount; i++ {
 		x, y := generateValidSpawningPosition(win)
 		ttlSec := 5
-		ghosts[i] = NewGhost(g, x, y, sprites, ttlSec)
+		ghosts[i] = NewGhost(g, x, y, g.ghostSprites[color], ttlSec)
 	}
 	return ghosts
 }
 
-func (g *Game) spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac {
+func (g *Game) spawnPacs(win *pixelgl.Window, amount int) []*Pac {
 	pacs := make([]*Pac, amount)
 	for i := 0; i < amount; i++ {
 		x, y := generateValidSpawningPosition(win)
 		ttlSec := 30
-		pacs[i] = NewPac(x, y, sprites, ttlSec)
+		pacs[i] = NewPac(x, y, g.pacSprites, ttlSec)
 	}
 	return pacs
 }
