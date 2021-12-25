@@ -64,6 +64,9 @@ func run() {
 
 		// --- Actions
 		game.Update()
+		if win.JustReleased(pixelgl.KeySpace) {
+			game.AddShot(win.Bounds().Center(), win.MousePosition())
+		}
 
 		if win.JustPressed(pixelgl.MouseButtonLeft) {
 			// mouse := cam.Unproject(win.MousePosition())
@@ -74,7 +77,7 @@ func run() {
 		win.Clear(colornames.Black)
 
 		// Game
-		game.Draw(win)
+		game.Draw()
 
 		win.Update()
 	}

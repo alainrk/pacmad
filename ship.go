@@ -20,7 +20,7 @@ type Ship struct {
 func NewShip(x, y float64, sprites []*pixel.Sprite) *Ship {
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
 	direction := pixel.V(0, 0)
-	matrix := pixel.IM.Scaled(pixel.ZV, 1).Moved(pixel.V(x, y))
+	matrix := pixel.IM.Scaled(pixel.ZV, ShipScalingFactor).Moved(pixel.V(x, y))
 	return &Ship{x, y, direction, sprites, matrix, animation}
 }
 
@@ -35,5 +35,5 @@ func (g *Ship) Update(direction pixel.Vec) {
 	newv := pixel.V(g.x, g.y).Sub(direction)
 	angle := math.Atan2(newv.Y, newv.X) + math.Pi/2 // adjustment for drawing
 
-	g.matrix = pixel.IM.Scaled(pixel.ZV, 1).Rotated(pixel.ZV, angle).Moved(pixel.V(g.x, g.y))
+	g.matrix = pixel.IM.Scaled(pixel.ZV, ShipScalingFactor).Rotated(pixel.ZV, angle).Moved(pixel.V(g.x, g.y))
 }

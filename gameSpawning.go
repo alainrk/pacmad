@@ -5,29 +5,52 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
-func spawnGhosts(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Ghost {
+func generateValidSpawningPosition(win *pixelgl.Window) (float64, float64) {
+	var x, y float64
+	// TODO: This can be evaluated just once
+	excludeXRange := [2]float64{win.Bounds().Center().X - SpawnDeltaBoundaryFromCenter, win.Bounds().Center().X + SpawnDeltaBoundaryFromCenter}
+	excludeYRange := [2]float64{win.Bounds().Center().Y - SpawnDeltaBoundaryFromCenter, win.Bounds().Center().Y + SpawnDeltaBoundaryFromCenter}
+	for {
+		x = float64(RandIntInRange(int(win.Bounds().Min.X+WindowBoundaryDelta), int(win.Bounds().Max.X-WindowBoundaryDelta)))
+		if x > excludeXRange[0] && x < excludeXRange[1] {
+			continue
+		}
+		break
+	}
+	for {
+		y = float64(RandIntInRange(int(win.Bounds().Min.Y+PanelBoundaryY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
+		if y > excludeYRange[0] && y < excludeYRange[1] {
+			continue
+		}
+		break
+	}
+	return x, y
+}
+
+func (g *Game) spawnGhosts(win *pixelgl.Window, amount int) []*Ghost {
+	ghostsColor := []string{"orange", "blue", "pink", "red"}
+	color := ghostsColor[RandIntInRange(0, len(ghostsColor))]
+
 	ghosts := make([]*Ghost, amount)
 	for i := 0; i < amount; i++ {
-		x := float64(RandIntInRange(int(win.Bounds().Min.X+16), int(win.Bounds().Max.X-16)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y+60), int(win.Bounds().Max.Y-16)))
+		x, y := generateValidSpawningPosition(win)
 		ttlSec := 5
-		ghosts[i] = NewGhost(x, y, sprites, ttlSec)
+		ghosts[i] = NewGhost(g, x, y, g.ghostSprites[color], ttlSec)
 	}
 	return ghosts
 }
 
-func spawnPacs(win *pixelgl.Window, sprites []*pixel.Sprite, amount int) []*Pac {
+func (g *Game) spawnPacs(win *pixelgl.Window, amount int) []*Pac {
 	pacs := make([]*Pac, amount)
 	for i := 0; i < amount; i++ {
-		x := float64(RandIntInRange(int(win.Bounds().Min.X+WindowBoundaryDelta), int(win.Bounds().Max.X-WindowBoundaryDelta)))
-		y := float64(RandIntInRange(int(win.Bounds().Min.Y+WindowBoundaryDeltaY), int(win.Bounds().Max.Y-WindowBoundaryDelta)))
+		x, y := generateValidSpawningPosition(win)
 		ttlSec := 30
-		pacs[i] = NewPac(x, y, sprites, ttlSec)
+		pacs[i] = NewPac(x, y, g.pacSprites, ttlSec)
 	}
 	return pacs
 }
 
-func spawnShip(win *pixelgl.Window, sprites []*pixel.Sprite) *Ship {
+func (g *Game) spawnShip(win *pixelgl.Window, sprites []*pixel.Sprite) *Ship {
 	ship := NewShip(win.Bounds().Center().X, win.Bounds().Center().Y, sprites)
 	return ship
 }
