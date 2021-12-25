@@ -13,7 +13,8 @@ const (
 	GhostSpawnIntervalMin = 300
 	GhostSpawnIntervalMax = 1200
 
-	WindowBoundaryDelta          = 15
-	PanelBoundaryY               = 60
-	SpawnDeltaBoundaryFromCenter = 50
+	WindowBoundaryDelta = 15
+	PanelBoundaryY      = 60
+
+	SpawnDeltaBoundaryFromCenter = 100
 )
