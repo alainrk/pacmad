@@ -16,5 +16,5 @@ const (
 	WindowBoundaryDelta = 15
 	PanelBoundaryY      = 60
 
-	SpawnDeltaBoundaryFromCenter = 100
+	SpawnDeltaBoundaryFromCenter = 200
 )
