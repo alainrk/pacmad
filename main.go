@@ -13,13 +13,6 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-// var (
-// 	camPos       = pixel.ZV
-// 	camSpeed     = 500.0
-// 	camZoom      = 1.0
-// 	camZoomSpeed = 1.01
-// )
-
 func CreateWindow() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pacmad",
@@ -42,35 +35,14 @@ func run() {
 
 	// Main Loop
 	for !win.Closed() {
-		// Keep consistent FPS rate, adjusting the rotation (in this case) according to the time elapsed since the last frame.
-
-		// -- Cam
-		// cam := pixel.IM.Scaled(camPos, camZoom).Moved(win.Bounds().Center().Sub(camPos))
-		// win.SetMatrix(cam)
-
-		// if win.Pressed(pixelgl.KeyLeft) {
-		// 	camPos.X -= camSpeed * dt
-		// }
-		// if win.Pressed(pixelgl.KeyRight) {
-		// 	camPos.X += camSpeed * dt
-		// }
-		// if win.Pressed(pixelgl.KeyDown) {
-		// 	camPos.Y -= camSpeed * dt
-		// }
-		// if win.Pressed(pixelgl.KeyUp) {
-		// 	camPos.Y += camSpeed * dt
-		// }
-		// camZoom *= math.Pow(camZoomSpeed, win.MouseScroll().Y)
-
 		// --- Actions
 		game.Update()
-		if win.JustReleased(pixelgl.KeySpace) {
-			game.AddShot(win.Bounds().Center(), win.MousePosition())
-		}
-
-		if win.JustPressed(pixelgl.MouseButtonLeft) {
-			// mouse := cam.Unproject(win.MousePosition())
-			game.AddShot(win.Bounds().Center(), win.MousePosition())
+		if win.JustReleased(pixelgl.KeySpace) || win.JustPressed(pixelgl.MouseButtonLeft) {
+			if game.status == "gameover" {
+				game = NewGame(win)
+			} else {
+				game.AddShot(win.Bounds().Center(), win.MousePosition())
+			}
 		}
 
 		// --- Draw

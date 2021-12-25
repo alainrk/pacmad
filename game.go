@@ -29,22 +29,26 @@ type Game struct {
 	panel        *Panel
 }
 
-func NewGame(win *pixelgl.Window) *Game {
-	g := &Game{
-		points: 0,
-		level:  1,
-		lives:  startLives,
-		paused: false,
-		status: "play",
-		win:    win,
-	}
+func (g *Game) init() {
+	g.points = 0
+	g.level = 1
+	g.lives = startLives
+	g.paused = false
+	g.status = "play"
 
 	g.loadSprites()
-	g.ship = g.spawnShip(win, g.shipSprites)
+	g.ship = g.spawnShip(g.win, g.shipSprites)
 	go g.spawnGhostsRoutine()
 	go g.spawnPacsRoutine()
 
-	g.panel = NewPanel(PanelBoundaryY, g, win)
+	g.panel = NewPanel(PanelBoundaryY, g, g.win)
+}
+
+func NewGame(win *pixelgl.Window) *Game {
+	g := &Game{
+		win: win,
+	}
+	g.init()
 	return g
 }
 
@@ -94,10 +98,11 @@ func (g *Game) Update() {
 func (g *Game) drawGameOver() {
 	g.win.Clear(colornames.Red)
 	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt := text.New(pixel.V(g.win.Bounds().Center().X-100, g.win.Bounds().Center().Y), basicAtlas)
+	basicTxt := text.New(pixel.V(g.win.Bounds().Center().X-120, g.win.Bounds().Center().Y+30), basicAtlas)
 
 	fmt.Fprintf(basicTxt, "GAME OVER\n")
-	fmt.Fprintf(basicTxt, "SCORE: %d\n", g.points)
+	fmt.Fprintf(basicTxt, "SCORE: %d\n\n", g.points)
+	fmt.Fprintf(basicTxt, "Insert Coin")
 	basicTxt.Draw(g.win, pixel.IM.Scaled(basicTxt.Orig, 3))
 }
 

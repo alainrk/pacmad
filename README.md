@@ -1,33 +1,22 @@
 # Pacmad
-<!-- [![YourActionName Actions Status](https://github.com/alainrk/pacmad/workflows/Go/badge.svg)](https://github.com/alainrk/pacmad/actions) -->
 
-https://user-images.githubusercontent.com/1529268/147382283-154ac4da-ba3b-4eb6-bf4f-e66c9f11e79a.mov
-
+https://user-images.githubusercontent.com/1529268/147389772-bddf5bbe-c311-41d8-b56a-8435077dcf24.mov
 
 ## Usage
 ```
 $ ./pacmad
-# Follow interactive instructions
 ```
-
-## Dev
-
-### Test everything recursively
+## Build
 ```
-chmod +x test.sh
-./test.sh
-```
-
-### Build everything recursively
-```
-go build ./...
-```
-
-### Cross compilation for multiple arch
-```
-chmod +x crosscompile.sh
-./crosscompile.sh
+go build .
 ```
 
 ### Development
 Branch *main* is protected and requires PR.
+
+
+## TODO
+- Apply delta time to keep FPS consistency
+- Modularize ghosts to better configure speed, spawn and difficulty level
+- Apply Seeking-Target and better Steering-Behavior to the Ghost-Pac/Ship relation
+- Levels (Implicit/Explicit, Gradual/Cliff ?)
