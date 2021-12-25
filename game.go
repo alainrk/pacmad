@@ -21,6 +21,7 @@ type Game struct {
 	ghostSprites []*pixel.Sprite
 	pacSprites   []*pixel.Sprite
 	shipSprites  []*pixel.Sprite
+	bgSprites    []*pixel.Sprite
 	shots        []*Shot
 	ghosts       []*Ghost
 	pacs         []*Pac
@@ -100,22 +101,24 @@ func (g *Game) drawGameOver() {
 	basicTxt.Draw(g.win, pixel.IM.Scaled(basicTxt.Orig, 3))
 }
 
-func (g *Game) Draw(win *pixelgl.Window) {
+func (g *Game) Draw() {
 	if g.status == "gameover" {
 		g.drawGameOver()
 		return
 	}
 
+	g.bgSprites[0].Draw(g.win, pixel.IM.Moved(pixel.V(g.win.Bounds().Center().X, g.win.Bounds().Center().Y)))
+
 	for _, ghost := range g.ghosts {
-		ghost.Draw(win)
+		ghost.Draw(g.win)
 	}
 	for _, shot := range g.shots {
-		shot.Draw(win)
+		shot.Draw(g.win)
 	}
 	for _, pac := range g.pacs {
-		pac.Draw(win)
+		pac.Draw(g.win)
 	}
 
-	g.ship.Draw(win)
+	g.ship.Draw(g.win)
 	g.panel.Draw()
 }

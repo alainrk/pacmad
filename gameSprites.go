@@ -1,6 +1,23 @@
 package main
 
-func (f *Game) loadShotSprites() {
+import "fmt"
+
+func (g *Game) loadBackgroundSprites() {
+	spritesheet, err := loadPicture("assets/background.png")
+	if err != nil {
+		panic(err)
+	}
+
+	startX := spritesheet.Bounds().Min.X
+	startY := spritesheet.Bounds().Min.Y
+	endX := spritesheet.Bounds().Max.X
+	endY := spritesheet.Bounds().Max.Y
+
+	g.bgSprites = createSprites(&spritesheet, startX, startY, endX, endY, endX, endY)
+	fmt.Println(startX, startY, endX, endY)
+}
+
+func (g *Game) loadShotSprites() {
 	spritesheet, err := loadPicture("assets/shot.png")
 	if err != nil {
 		panic(err)
@@ -11,10 +28,10 @@ func (f *Game) loadShotSprites() {
 	endX := spritesheet.Bounds().Max.X
 	endY := spritesheet.Bounds().Max.Y
 
-	f.shotSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
+	g.shotSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32, 32)
 }
 
-func (f *Game) loadPacSprites() {
+func (g *Game) loadPacSprites() {
 	spritesheet, err := loadPicture("assets/pac.png")
 	if err != nil {
 		panic(err)
@@ -25,10 +42,10 @@ func (f *Game) loadPacSprites() {
 	endX := spritesheet.Bounds().Max.X
 	endY := spritesheet.Bounds().Max.Y
 
-	f.pacSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
+	g.pacSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32, 32)
 }
 
-func (f *Game) loadShipSprites() {
+func (g *Game) loadShipSprites() {
 	spritesheet, err := loadPicture("assets/ship.png")
 	if err != nil {
 		panic(err)
@@ -39,10 +56,10 @@ func (f *Game) loadShipSprites() {
 	endX := spritesheet.Bounds().Max.X
 	endY := spritesheet.Bounds().Max.Y
 
-	f.shipSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32)
+	g.shipSprites = createSprites(&spritesheet, startX, startY, endX, endY, 32, 32)
 }
 
-func (f *Game) loadGhostSprites() {
+func (g *Game) loadGhostSprites() {
 	spritesheet, err := loadPicture("assets/pmsprites.png")
 	if err != nil {
 		panic(err)
@@ -54,12 +71,13 @@ func (f *Game) loadGhostSprites() {
 	endX := startX + (step * 8)
 	endY := startY + step
 
-	f.ghostSprites = createSprites(&spritesheet, startX, startY, endX, endY, step)
+	g.ghostSprites = createSprites(&spritesheet, startX, startY, endX, endY, step, step)
 }
 
-func (f *Game) loadSprites() {
-	f.loadGhostSprites()
-	f.loadShotSprites()
-	f.loadPacSprites()
-	f.loadShipSprites()
+func (g *Game) loadSprites() {
+	g.loadBackgroundSprites()
+	g.loadGhostSprites()
+	g.loadShotSprites()
+	g.loadPacSprites()
+	g.loadShipSprites()
 }

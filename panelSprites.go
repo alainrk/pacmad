@@ -12,5 +12,5 @@ func (p *Panel) loadHearthSprites() {
 	endX := spritesheet.Bounds().Max.X
 	endY := spritesheet.Bounds().Max.Y
 
-	p.hearthSprites = createSprites(&spritesheet, startX, startY, endX, endY, step)
+	p.hearthSprites = createSprites(&spritesheet, startX, startY, endX, endY, step, step)
 }

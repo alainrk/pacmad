@@ -74,7 +74,7 @@ func run() {
 		win.Clear(colornames.Black)
 
 		// Game
-		game.Draw(win)
+		game.Draw()
 
 		win.Update()
 	}
