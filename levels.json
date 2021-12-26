@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "speed": {
+      "min": 20,
+      "max": 100
+    }
+  },
+  "levels": [{
+    "level": 1,
+    "ghosts": {
+      "orange": {
+        "amount": 20,
+        "speed": 20,
+        "color": "orange",
+        "strategy": "",
+        "ttl_sec": 100000
+      },
+      "blue": {
+        "amount": 10,
+        "speed": 30,
+        "color": "blue",
+        "strategy": "",
+        "ttl_sec": 100000
+      },
+      "pink": {
+        "amount": 5,
+        "speed": 40,
+        "color": "pink",
+        "strategy": "",
+        "ttl_sec": 100000
+      },
+      "red": {
+        "amount": 2,
+        "speed": 50,
+        "color": "red",
+        "strategy": "",
+        "ttl_sec": 100000
+      }
+    }
+  }]
+}
