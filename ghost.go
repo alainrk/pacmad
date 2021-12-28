@@ -25,8 +25,8 @@ func NewGhost(game *Game, x, y float64, sprites []*pixel.Sprite, ttlSec int) *Gh
 	animation := NewAnimation(100*time.Millisecond, sprites, true)
 	now := time.Now()
 
-	velocity := RandFloatInRange(-0.002, 0-0.001)
-	direction := pixel.V(x, y).Sub(pixel.V(game.win.Bounds().Center().X, game.win.Bounds().Center().Y)).Scaled(velocity)
+	speed := -0.01 // RandFloatInRange(-0.002, -0.001)
+	direction := pixel.V(x, y).Sub(pixel.V(game.win.Bounds().Center().X, game.win.Bounds().Center().Y)).Scaled(speed)
 
 	// XXX: For now TTL is high, seeing that they point to the ship
 	return &Ghost{now, false, game, x, y, direction, sprites, matrix, animation, ttlSec + 999}

@@ -17,6 +17,7 @@ Branch *main* is protected and requires PR.
 
 ## TODO
 - Apply delta time to keep FPS consistency
+- Batch rendering
 - Modularize ghosts to better configure speed, spawn and difficulty level
 - Apply Seeking-Target and better Steering-Behavior to the Ghost-Pac/Ship relation
 - Levels (Implicit/Explicit, Gradual/Cliff ?)
